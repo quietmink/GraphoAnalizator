@@ -3,7 +3,7 @@ from ctypes import *
 
 app = Flask(__name__)
 
-lib = cdll.LoadLibrary(r'C:/Users/serge/Desktop/Btree/example.dll')
+lib = cdll.LoadLibrary(r'./example.dll')
 
 result = lib.myFunction()
 
