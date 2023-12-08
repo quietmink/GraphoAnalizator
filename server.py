@@ -3,7 +3,7 @@ from ctypes import *
 
 app = Flask(__name__)
 
-lib = cdll.LoadLibrary(r'./example.dll') # g++ -shared -o example.dll -fPIC example.cpp
+lib = cdll.LoadLibrary(r'./example.dll')
 
 result = lib.myFunction()
 
