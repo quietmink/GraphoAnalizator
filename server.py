@@ -1,9 +1,9 @@
 from flask import Flask, jsonify, render_template
-from ctypes import *
+import ctypes
 
 app = Flask(__name__)
 
-lib = cdll.LoadLibrary(r'./example.dll')
+lib = ctypes.CDLL('./example.dll')
 
 @app.route('/')
 def index():
