@@ -1,7 +1,9 @@
 // g++ -fPIC -shared -o example.dll example.cpp
 
+#include <string>
+
 extern "C" {
-    int myFunction() {
+    __declspec(dllexport) int myFunction() {
         return 56;
     }
 }
