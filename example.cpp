@@ -1,4 +1,4 @@
-// g++ -shared -o example.dll -fPIC example.cpp
+// g++ -fPIC -shared -o example.dll example.cpp
 
 extern "C" {
     int myFunction() {
