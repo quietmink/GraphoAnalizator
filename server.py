@@ -3,7 +3,7 @@ import ctypes
 
 app = Flask(__name__)
 
-lib = ctypes.CDLL('./example.dll')
+lib = ctypes.CDLL('./library/example.dll')
 
 @app.route('/')
 def index():
