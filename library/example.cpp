@@ -1,6 +1,6 @@
-// To make DLL use "x64 Native Tools Command Prompt for VS Code 2022" in libraries directory:
-// cl /c /EHsc example.cpp
-// link /DLL /OUT:example.dll example.obj 
+// To make DLL use "x64 Native Tools Command Prompt for VS Code 2022" in library directory:
+//      cl /c /EHsc example.cpp
+//      link /DLL /OUT:example.dll example.obj && del example.lib && del example.exp && del example.obj
 
 #include <iostream>
 
