@@ -7,44 +7,35 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
 	<div class="graph">
-		<div class="vertexes">
+		<div class="left__side">
+			<div class="vertexes">
+				
+			</div>
 			
-		</div>
-		
 
-		<canvas id="canvas" width="700" height="700"></canvas>
-			
-		<div class="buttons__inner">
-			<button class="button" id="add__vertex">Добавить вершину</button>
-			<button class="button" id="remove__vertex">Удалить вершину</button>
-			<button class="button" id="add__line">Добавить ребро</button>
-			<button class="button" id="remove__line">Удалить ребро</button>
-			<button class="button">Матрица смежности</button>
-			<button class="button">Матрица инцидентности</button>
-			<button class="button">Весовая матрица</button>
-			<button class="button">Минимальное остовное дерево</button>
+			<canvas id="graphCanvas" width="700" height="700"></canvas>
+		</div>
+				
+		<div class="right__side">
+			<div class="buttons__inner">
+				<button class="button" id="addNodeBtn">Добавить вершину</button>
+				<button class="button" id="deleteNodeBtn">Удалить вершину</button>
+				<button class="button" id="createEdgeBtn">Добавить ребро</button>
+				<button class="button" id="matrix__adjacency">Матрица смежности</button>
+				<button class="button" id="matrix__incidentality">Матрица инцидентности</button>
+				<button class="button" id="weight__matrix">Весовая матрица</button>
+				<button class="button" id="ostov__tree">Минимальное остовное дерево</button>
+			</div>
+
+			<div class="table__inner">
+				<table id="matrix__adj"></table>
+				<table id="matrix__incid"></table>
+				<table id="matrix__weight"></table>
+			</div>	
 		</div>
 	</div>
-
-
-
-<!-- Добавление вершин
-Удаление вершин
-Добавление ребер
-Удаление ребер
-Возможность указания направления
-
-Матрица смежности
-Список смежности
-Матрица инцидентности
-Весовая матрица
-Минимальное остовное дерево
-Раскраска графа
-
-	 -->
-
+	
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 

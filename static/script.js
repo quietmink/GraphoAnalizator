@@ -1,204 +1,179 @@
-let graph = document.querySelector('.graph')
-let selectedVertexes = [] //Хранит выбранные вершины
-let clickCount = 0;
-// Кнопки
+// Матрица смежности
+//=======================================================
+matrixAdjacency = document.getElementById('matrix__adjacency')
 
-//Кнопка добавить узел
-let buttonAddVertex = document.querySelector('#add__vertex')
+matrixAdjacency.addEventListener('click', function() {
+	generateMatrix("matrix__adj")
+	
+})
+//=====================================================
 
-buttonAddVertex.onclick = () => {
-	let newVertex = document.createElement('div')
-	newVertex.classList.add('vertex')
-	newVertex.textContent = '23'
-	clickCount++
-	newVertex.id = `el${clickCount}`
-	graph.appendChild(newVertex)
-	selectVertex(newVertex)
+// Матрица инцидентности
+//=======================================================
+matrixIncidentality = document.getElementById('matrix__incidentality')
 
-	document.addEventListener('click', function(event) {
-		if (!newVertex.contains(event.target) && !event.target.classList.contains('vertex')) {
-			newVertex.style.border = '2px solid green'
-		}
-	})
-}
+matrixIncidentality.addEventListener('click', function() {
+	generateMatrix("matrix__incid")
+})
+//=====================================================
 
-// Кнопка удалить узел
-buttonRemoveVertex = document.querySelector('#remove__vertex')
+// Весовая матрица
+//=======================================================
+matrixWeight = document.getElementById('weight__matrix')
 
-buttonRemoveVertex.onclick = () => {
-	let vertexes = document.querySelectorAll('.vertex')
-	let lastVertex = vertexes[vertexes.length - 1]
-
-	if (lastVertex) {
-    lastVertex.parentNode.removeChild(lastVertex)
-	}
-}
-
-//Добавить ребро
-buttonAddLine = document.querySelector('#add__line')
-
-buttonAddLine.addEventListener('click', function() {
-	addLine()
+matrixWeight.addEventListener('click', function() {
+	generateMatrix("matrix__weight")
 })
 
-//Выбираем элемент
-let vertexes = document.querySelectorAll('.vertex')
+// Матрицы
+// Размеры матрицы
+    const rows = 3
+    const cols = 3
 
-function selectVertex(element) {
-	element.addEventListener('click', function() {
-		element.style.border = '2px solid red'
-	})
-}
-
-vertexes.forEach(function(element) {
-	selectVertex(element)
-})
-
-
-//Если клик вне элемента, то отменяем выбор
-function cancelSelectVertex() {
-	document.addEventListener('click', function(event) {
-		vertexes.forEach(function(element) {
-			if (!element.contains(event.target) && !event.target.classList.contains('vertex')) {
-				// Клик произошел вне элемента, сбрасываем стиль рамки
-				element.style.border = '2px solid green' // исходный цвет рамки
+    // Генерация матрицы
+    function generateMatrix(matrix__name) {
+			let matrix = "<tr>"
+			for (let i = 1; i <= cols; i++) {
+					matrix += `<th>${i}</th>`
 			}
-		})
-	})
-}
+			matrix += "</tr>"
 
-cancelSelectVertex()
+			for (let i = 1; i <= rows; i++) {
+					matrix += "<tr>"
+					for (let j = 1; j <= cols; j++) {
+							matrix += `<td>${i},${j}</td>`
+					}
+					matrix += "</tr>"
+			}
 
-//Построение ребер
+			document.getElementById(matrix__name).innerHTML = matrix
+    }
 
-function addLine() {
-	let el1 = document.getElementById('el1')
-	let el2 = document.getElementById('el2')
-	const size = 40
+// Canvas
+//=======================================================================
+document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const addNodeBtn = document.getElementById('addNodeBtn');
+    const createEdgeBtn = document.getElementById('createEdgeBtn');
+    const deleteNodeBtn = document.getElementById('deleteNodeBtn'); // Добавленная кнопка удаления
 
-	const canvas = document.getElementById('canvas')
-	const context = canvas.getContext('2d')
-	let width = canvas.width
-	let height = canvas.height
+    let nodes = [];
+    let edges = [];
+    let selectedNode = null;
+    let isDragging = false;
 
-	/*------------------------------------*/
-	let current = null
-	let elements = {
-	el1: {
-		x: Math.random() * (width - size),
-		y: Math.random() * (height - size),
-		startX: 0,
-		startY: 0
-	},
+    function drawNode(x, y, isSelected = false) {
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = isSelected ? 'red' : 'blue';
+        ctx.fill();
+        ctx.stroke();
+    }
 
-	el2: {
-		x: Math.random() * (width - size),
-		y: Math.random() * (height - size),
-		startX: 0,
-		startY: 0
-	}
-	}
+    function drawEdge(node1, node2) {
+        ctx.beginPath();
+        ctx.moveTo(node1.x, node1.y);
+        ctx.lineTo(node2.x, node2.y);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+    }
 
-	// начальное положение
-	translate(el1, elements.el1.x, elements.el1.y)
-	translate(el2, elements.el2.x, elements.el2.y)
-	drawLine(
-	elements.el1.x,
-	elements.el2.x,
-	elements.el1.y,
-	elements.el2.y
-	)
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-	/*------------------------------------*/
+    function handleAddNode() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        nodes.push({ x, y });
+        clearCanvas();
+        nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+        edges.forEach(edge => drawEdge(edge[0], edge[1]));
+    }
 
-	el1.addEventListener('mousedown', onMouseDown)
-	el2.addEventListener('mousedown', onMouseDown)
+    function handleCreateEdge() {
+        if (selectedNode && selectedNode !== nodes[nodes.length - 1]) {
+            edges.push([nodes[nodes.length - 1], selectedNode]);
+            clearCanvas();
+            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+        }
+    }
 
+    function handleDeleteNode() {
+        if (selectedNode) {
+            // Удаляем вершину из массива nodes
+            const indexToRemove = nodes.indexOf(selectedNode);
+            if (indexToRemove !== -1) {
+                nodes.splice(indexToRemove, 1);
+            }
 
-	function onMouseDown(e) {
-	e.preventDefault()
-	// координаты нажатия мыши внутри элемента
-	elements[e.target.id].startX = e.x - elements[e.target.id].x
-	elements[e.target.id].startY = e.y - elements[e.target.id].y
+            // Удаляем связанные рёбра
+            edges = edges.filter(edge => edge[0] !== selectedNode && edge[1] !== selectedNode);
 
-	current = e.target
+            // Сбрасываем выбранную вершину
+            selectedNode = null;
 
-	document.body.addEventListener('mousemove', onMouseMove)
-	document.body.addEventListener('mouseup', onMouseUp)
-	}
+            // Очищаем и перерисовываем canvas
+            clearCanvas();
+            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+        }
+    }
 
-	function onMouseMove(e) {
-		let x = elements[current.id].x = e.x - elements[current.id].startX
-		let y = elements[current.id].y = e.y - elements[current.id].startY
+    function handleCanvasClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
 
-		translate(current, x, y)
-		drawLine(
-			elements.el1.x,
-			elements.el2.x,
-			elements.el1.y,
-			elements.el2.y
-		)
-	}
+        const clickedNode = nodes.find(node => {
+            const distance = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+            return distance <= 20;
+        });
 
-	function onMouseUp() {
-		document.body.removeEventListener('mousemove', onMouseMove)
-		document.body.removeEventListener('mouseup', onMouseUp)
-	}
+        if (clickedNode) {
+            if (event.button === 0) {
+                selectedNode = clickedNode;
+            }
+        } else {
+            selectedNode = null;
+        }
 
-	/*------------------------------------*/
+        clearCanvas();
+        nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+        edges.forEach(edge => drawEdge(edge[0], edge[1]));
+    }
 
-	function translate(el, x, y) {
-		el.style.transform = `translate(${x}px, ${y}px)`
-	}
+    function handleCanvasMouseMove(event) {
+        if (selectedNode && isDragging) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
 
-	function drawLine(x1, x2, y1, y2) {
-		context.clearRect(0, 0, width, height)
-		context.beginPath()
-		// из центра квадрата
-		context.moveTo(x1 + size / 2, y1 + size / 2)
-		// в центр другого квадрата
-		context.lineTo(x2 + size / 2, y2 + size / 2)
-		context.stroke()
-	}
+            selectedNode.x = mouseX;
+            selectedNode.y = mouseY;
 
-}
+            clearCanvas();
+            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+        }
+    }
 
+    function handleCanvasMouseUp() {
+        isDragging = false;
+    }
 
-
-// Функционал
-
-// //Функция для перемещения элементов
-// function elementDragging(element) {
-//     let isDragging = false;
-//     let initialMouseX, initialMouseY;
-//     let initialElementX, initialElementY;
-
-//     element.addEventListener('mousedown', function (e) {
-//       isDragging = true;
-//       initialMouseX = e.clientX;
-//       initialMouseY = e.clientY;
-//       initialElementX = element.offsetLeft;
-//       initialElementY = element.offsetTop;
-//     });
-
-//     document.addEventListener('mousemove', function (e) {
-//       if (isDragging) {
-//         let deltaX = e.clientX - initialMouseX;
-//         let deltaY = e.clientY - initialMouseY;
-//         let newElementX = initialElementX + deltaX;
-//         let newElementY = initialElementY + deltaY;
-//         element.style.left = newElementX + 'px';
-//         element.style.top = newElementY + 'px';
-//       }
-//     });
-
-//     document.addEventListener('mouseup', function () {
-//       isDragging = false;
-//     });
-//   }
-
-// let draggableElements = document.querySelectorAll('.vertex');
-
-// draggableElements.forEach(function (element) {
-// 	elementDragging(element);
-// });
+    addNodeBtn.addEventListener('click', handleAddNode);
+    createEdgeBtn.addEventListener('click', handleCreateEdge);
+    deleteNodeBtn.addEventListener('click', handleDeleteNode); // Добавлен слушатель для кнопки удаления
+    canvas.addEventListener('mousedown', function () {
+        isDragging = true;
+    });
+    canvas.addEventListener('mousemove', handleCanvasMouseMove);
+    canvas.addEventListener('mouseup', handleCanvasMouseUp);
+    canvas.addEventListener('mouseleave', function () {
+        isDragging = false;
+    });
+    canvas.addEventListener('click', handleCanvasClick);
+});
