@@ -32,22 +32,29 @@ matrixWeight.addEventListener('click', function() {
 
     // Генерация матрицы
     function generateMatrix(matrix__name) {
-			let matrix = "<tr>"
-			for (let i = 1; i <= cols; i++) {
-					matrix += `<th>${i}</th>`
-			}
-			matrix += "</tr>"
-
-			for (let i = 1; i <= rows; i++) {
-					matrix += "<tr>"
-					for (let j = 1; j <= cols; j++) {
-							matrix += `<td>${i},${j}</td>`
-					}
-					matrix += "</tr>"
-			}
-
-			document.getElementById(matrix__name).innerHTML = matrix
+    let matrix = "<table>"; // Используйте <table> вместо <div> для создания таблицы
+    matrix += "<tr>";
+    for (let i = 1; i <= cols; i++) {
+        matrix += `<th>${i}</th>`;
     }
+    matrix += "</tr>";
+
+    for (let i = 1; i <= rows; i++) {
+        matrix += "<tr>";
+        for (let j = 1; j <= cols; j++) {
+            matrix += `<td>${i},${j}</td>`;
+        }
+        matrix += "</tr>";
+    }
+
+    matrix += "</table>"; // Закройте таблицу
+
+    document.getElementById(matrix__name).innerHTML = matrix;
+
+    // Текст добавляется после закрытия тега </table>
+    let text = '<div style="text-align: center; margin-top: 10px;">Матрица инцидентности</div>';
+    document.getElementById(matrix__name).insertAdjacentHTML('beforeend', text);
+}
 
 // Canvas
 //=======================================================================
