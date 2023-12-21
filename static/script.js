@@ -3,8 +3,7 @@
 matrixAdjacency = document.getElementById('matrix__adjacency')
 
 matrixAdjacency.addEventListener('click', function() {
-	generateMatrix("matrix__adj")
-	
+	generateMatrix("matrix__adj", "Матрица смежности")
 })
 //=====================================================
 
@@ -13,7 +12,7 @@ matrixAdjacency.addEventListener('click', function() {
 matrixIncidentality = document.getElementById('matrix__incidentality')
 
 matrixIncidentality.addEventListener('click', function() {
-	generateMatrix("matrix__incid")
+	generateMatrix("matrix__incid", "Матрица инцидентности")
 })
 //=====================================================
 
@@ -22,7 +21,7 @@ matrixIncidentality.addEventListener('click', function() {
 matrixWeight = document.getElementById('weight__matrix')
 
 matrixWeight.addEventListener('click', function() {
-	generateMatrix("matrix__weight")
+	generateMatrix("matrix__weight", "Весовая матрица")
 })
 
 // Матрицы
@@ -31,7 +30,7 @@ matrixWeight.addEventListener('click', function() {
     const cols = 3
 
     // Генерация матрицы
-    function generateMatrix(matrix__name) {
+		function generateMatrix(matrix__name, matrix__isName) {
     let matrix = "<table>"; // Используйте <table> вместо <div> для создания таблицы
     matrix += "<tr>";
     for (let i = 1; i <= cols; i++) {
@@ -47,14 +46,15 @@ matrixWeight.addEventListener('click', function() {
         matrix += "</tr>";
     }
 
+    matrix += '<tr>';
+    matrix += `<td colspan="${cols}" style="text-align: center;">${matrix__isName}</td>`;
+    matrix += '</tr>';
+
     matrix += "</table>"; // Закройте таблицу
 
     document.getElementById(matrix__name).innerHTML = matrix;
-
-    // Текст добавляется после закрытия тега </table>
-    let text = '<div style="text-align: center; margin-top: 10px;">Матрица инцидентности</div>';
-    document.getElementById(matrix__name).insertAdjacentHTML('beforeend', text);
 }
+
 
 // Canvas
 //=======================================================================
@@ -63,19 +63,29 @@ document.addEventListener('DOMContentLoaded', function () {
     const ctx = canvas.getContext('2d');
     const addNodeBtn = document.getElementById('addNodeBtn');
     const createEdgeBtn = document.getElementById('createEdgeBtn');
-    const deleteNodeBtn = document.getElementById('deleteNodeBtn'); // Добавленная кнопка удаления
+    const deleteNodeBtn = document.getElementById('deleteNodeBtn');
+    
+    const modal = document.getElementById('myModal');
+    const valueInput = document.getElementById('nodeValue');
+    const addNodeModalBtn = document.getElementById('addNodeModalBtn');
 
     let nodes = [];
     let edges = [];
     let selectedNode = null;
     let isDragging = false;
 
-    function drawNode(x, y, isSelected = false) {
+    function drawNode(node) {
         ctx.beginPath();
-        ctx.arc(x, y, 20, 0, 2 * Math.PI);
-        ctx.fillStyle = isSelected ? 'red' : 'blue';
+        ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = node === selectedNode ? 'red' : 'blue';
         ctx.fill();
         ctx.stroke();
+
+        ctx.fillStyle = 'white';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('' + node.value, node.x, node.y);
     }
 
     function drawEdge(node1, node2) {
@@ -90,42 +100,68 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    function handleAddNode() {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        nodes.push({ x, y });
-        clearCanvas();
-        nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
+    function drawGraph() {
         edges.forEach(edge => drawEdge(edge[0], edge[1]));
+        nodes.forEach(node => drawNode(node));
+    }
+
+    function openModal() {
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+		function closeAndClearModal() {
+    closeModal();
+    valueInput.value = ''; // Очистим поле ввода при закрытии
+}
+
+    function handleAddNodeFromModal() {
+        const value = valueInput.value.trim();
+
+        if (value !== '') {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const numericValue = parseFloat(value);
+            const newNode = {
+                x,
+                y,
+                value: isNaN(numericValue) ? 0 : numericValue
+            };
+            nodes.push(newNode);
+            clearCanvas();
+            drawGraph();
+            closeModal();
+        }
+    }
+
+    function handleAddNode() {
+        openModal();
     }
 
     function handleCreateEdge() {
         if (selectedNode && selectedNode !== nodes[nodes.length - 1]) {
             edges.push([nodes[nodes.length - 1], selectedNode]);
             clearCanvas();
-            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
-            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+            drawGraph();
         }
     }
 
     function handleDeleteNode() {
         if (selectedNode) {
-            // Удаляем вершину из массива nodes
             const indexToRemove = nodes.indexOf(selectedNode);
             if (indexToRemove !== -1) {
                 nodes.splice(indexToRemove, 1);
             }
 
-            // Удаляем связанные рёбра
             edges = edges.filter(edge => edge[0] !== selectedNode && edge[1] !== selectedNode);
 
-            // Сбрасываем выбранную вершину
             selectedNode = null;
 
-            // Очищаем и перерисовываем canvas
             clearCanvas();
-            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
-            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+            drawGraph();
         }
     }
 
@@ -148,8 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         clearCanvas();
-        nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
-        edges.forEach(edge => drawEdge(edge[0], edge[1]));
+        drawGraph();
     }
 
     function handleCanvasMouseMove(event) {
@@ -162,8 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedNode.y = mouseY;
 
             clearCanvas();
-            nodes.forEach(node => drawNode(node.x, node.y, node === selectedNode));
-            edges.forEach(edge => drawEdge(edge[0], edge[1]));
+            drawGraph();
         }
     }
 
@@ -171,9 +205,22 @@ document.addEventListener('DOMContentLoaded', function () {
         isDragging = false;
     }
 
+		addNodeModalBtn.addEventListener('click', handleAddNodeFromModal);
+
+		// Закрытие модального окна при клике вне его
+		window.addEventListener('click', function (event) {
+				if (event.target === modal) {
+						closeAndClearModal();
+				}
+		});
+
+		// Закрытие модального окна при нажатии на "X"
+		const closeBtn = document.querySelector('.close');
+		closeBtn.addEventListener('click', closeAndClearModal);
+
     addNodeBtn.addEventListener('click', handleAddNode);
     createEdgeBtn.addEventListener('click', handleCreateEdge);
-    deleteNodeBtn.addEventListener('click', handleDeleteNode); // Добавлен слушатель для кнопки удаления
+    deleteNodeBtn.addEventListener('click', handleDeleteNode);
     canvas.addEventListener('mousedown', function () {
         isDragging = true;
     });
@@ -183,4 +230,15 @@ document.addEventListener('DOMContentLoaded', function () {
         isDragging = false;
     });
     canvas.addEventListener('click', handleCanvasClick);
+
+    // Обработчик для кнопки в модальном окне
+    addNodeModalBtn.addEventListener('click', handleAddNodeFromModal);
+
+    // Закрытие модального окна при клике вне его
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
 });
+

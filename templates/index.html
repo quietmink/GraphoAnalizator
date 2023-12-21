@@ -15,8 +15,6 @@
 			<div class="vertexes">
 				
 			</div>
-			
-
 			<canvas id="graphCanvas" width="700" height="700"></canvas>
 		</div>
 				
@@ -30,6 +28,15 @@
 				<button class="button" id="weight__matrix">Весовая матрица</button>
 				<button class="button" id="ostov__tree">Минимальное остовное дерево</button>
 			</div>
+
+			<div id="myModal" class="modal">
+				<div class="modal-content">
+					<span class="close" onclick="closeModal()">&times;</span>
+					<p>Введите значение для вершины:</p>
+					<input type="text" id="nodeValue">
+					<button id="addNodeModalBtn">Добавить вершину</button>
+				</div>
+			</div>	
 
 			<div class="table__inner">
 				<table id="matrix__adj"></table>
