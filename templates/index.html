@@ -1,14 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-
 <body>
+
+	
+<div class="graph">
+	<div class="container">
+		<div class="graph__inner">
+			<div class="vertex">42</div>
+			<div class="vertex">53</div>
+			<div class="line"></div>
+		</div>
+		<div class="buttons__inner">
+			<button class="button" id="add__vertex">Добавить вершину</button>
+			<button class="button" id="remove__vertex">Удалить вершину</button>
+			<button class="button" id="add__line">Добавить ребро</button>
+			<button class="button" id="remove__line">Удалить ребро</button>
+			<button class="button">Матрица смежности</button>
+			<button class="button">Матрица инцидентности</button>
+			<button class="button">Весовая матрица</button>
+			<button class="button">Минимальное остовное дерево</button>
+		</div>
+	</div>
+</div>
+
+
+<!-- Добавление вершин
+Удаление вершин
+Добавление ребер
+Удаление ребер
+Возможность указания направления
+
+Матрица смежности
+Список смежности
+Матрица инцидентности
+Весовая матрица
+Минимальное остовное дерево
+Раскраска графа
+
+	 -->
+
+
+
+
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 
