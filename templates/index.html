@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
     <title>Graph</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -12,8 +15,6 @@
 			<div class="vertexes">
 				
 			</div>
-			
-
 			<canvas id="graphCanvas" width="700" height="700"></canvas>
 		</div>
 				
@@ -27,6 +28,15 @@
 				<button class="button" id="weight__matrix">Весовая матрица</button>
 				<button class="button" id="ostov__tree">Минимальное остовное дерево</button>
 			</div>
+
+			<div id="myModal" class="modal">
+				<div class="modal-content">
+					<span class="close" onclick="closeModal()">&times;</span>
+					<p>Введите значение для вершины:</p>
+					<input type="text" id="nodeValue">
+					<button id="addNodeModalBtn">Добавить вершину</button>
+				</div>
+			</div>	
 
 			<div class="table__inner">
 				<table id="matrix__adj"></table>
