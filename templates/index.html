@@ -8,14 +8,14 @@
 </head>
 <body>
 
-	
-<div class="graph">
-	<div class="container">
-		<div class="graph__inner">
-			<div class="vertex">42</div>
-			<div class="vertex">53</div>
-			<div class="line"></div>
+	<div class="graph">
+		<div class="vertexes">
+			
 		</div>
+		
+
+		<canvas id="canvas" width="700" height="700"></canvas>
+			
 		<div class="buttons__inner">
 			<button class="button" id="add__vertex">Добавить вершину</button>
 			<button class="button" id="remove__vertex">Удалить вершину</button>
@@ -27,7 +27,7 @@
 			<button class="button">Минимальное остовное дерево</button>
 		</div>
 	</div>
-</div>
+
 
 
 <!-- Добавление вершин
@@ -44,10 +44,6 @@
 Раскраска графа
 
 	 -->
-
-
-
-
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
