@@ -31,5 +31,11 @@ def remove_node():
     result = removeVertex(int(data['id']))
     return jsonify(result)
 
+@app.route('/add-edge-endpoint', methods=['POST'])
+def remove_edge():
+    data = request.get_json()
+    result = addEdge(int(data['id1']), int(data['id2']), int(data['weight']))
+    return jsonify(result)
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let nodes = [];
     let edges = [];
     let selectedNode = null;
+    let selectedNode1 = null;
     let isDragging = false;
 
     var count = 0;
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.beginPath();
         ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
         ctx.fillStyle = node === selectedNode ? 'red' : 'blue';
-        ctx.fill();
+                ctx.fill();
         ctx.stroke();
 
         ctx.fillStyle = 'white';
@@ -154,8 +155,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleCreateEdge() {
-        if (selectedNode && selectedNode !== nodes[nodes.length - 1]) {
-            edges.push([nodes[nodes.length - 1], selectedNode]);
+        if (selectedNode && selectedNode1 && selectedNode != selectedNode1) {
+            edges.push([selectedNode, selectedNode1]);
+
+            fetch('/add-edge-endpoint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id1:selectedNode.id, id2:selectedNode1.id, weight:(selectedNode.value+selectedNode1.value)}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ответ от сервера:', data);
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+            });
+
             clearCanvas();
             drawGraph();
         }
@@ -202,9 +219,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (clickedNode) {
             if (event.button === 0) {
-                selectedNode = clickedNode;
-            }
+                                selectedNode = clickedNode;
+                        }
         } else {
+            selectedNode1 = selectedNode;
             selectedNode = null;
         }
 
