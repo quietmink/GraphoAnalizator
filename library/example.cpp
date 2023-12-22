@@ -24,8 +24,49 @@ extern "C" {
         inFile.close();
     }
 
-    // __declspec(dllexport) void removeVertexCPP(int id) { // удаление вершины из списка смежности
-    // }
+    __declspec(dllexport) void removeVertexCPP(int id) { // удаление вершины из списка смежности
+        const string filename = "./matrix/matrix.txt";
+
+        ifstream inputFile(filename);
+        stringstream modifiedContent;
+
+        string line;
+        while (getline(inputFile, line)) {
+            istringstream iss(line);
+            int nodeId, nodeWeight;
+            char separator;
+
+            iss >> nodeId >> separator >> nodeWeight;
+
+            if (nodeId != id) {
+                vector<pair<int, int>> edges;
+                int connectedNode, edgeLength;
+
+                while (iss >> connectedNode >> separator >> edgeLength) {
+                    if (connectedNode != id) {
+                        edges.push_back({ connectedNode, edgeLength });
+                    }
+                }
+
+                // Записываем обновленную строку в память
+                modifiedContent << nodeId << ":" << nodeWeight;
+                for (const auto& edge : edges) {
+                    modifiedContent << " " << edge.first << ":" << edge.second;
+                }
+
+                // Добавляем перевод строки, если это не последняя строка
+                if (!inputFile.eof()) {
+                    modifiedContent << endl;
+                }
+            }
+        }
+
+        inputFile.close();
+
+        ofstream outputFile(filename);
+        outputFile << modifiedContent.str();
+        outputFile.close();
+    }
 
     __declspec(dllexport) void addEdgeCPP(int id1, int id2, int weight) { // добавление ребра в список смежности
         const string filename = "./matrix/matrix.txt";

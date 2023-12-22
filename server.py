@@ -11,7 +11,7 @@ addEdge = lib.addEdgeCPP
 removeEdge = lib.removeEdgeCPP
 
 addVertex.argtypes = [ctypes.c_int, ctypes.c_int]
-# removeVertex.argtypes = [ctypes.c_int]
+removeVertex.argtypes = [ctypes.c_int]
 addEdge.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
 removeEdge.argtypes = [ctypes.c_int, ctypes.c_int]
 
