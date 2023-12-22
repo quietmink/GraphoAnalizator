@@ -11,7 +11,6 @@ using namespace std;
 extern "C" {
     __declspec(dllexport) void addVertexCPP(int id, int weight) { // добавление вершины в список смежности
         const string filename = "./matrix/matrix.txt";
-
         fstream inFile(filename, ios::app);
 
         inFile.seekg(0, ios::end);
@@ -26,11 +25,10 @@ extern "C" {
 
     __declspec(dllexport) void removeVertexCPP(int id) { // удаление вершины из списка смежности
         const string filename = "./matrix/matrix.txt";
-
         ifstream inputFile(filename);
         stringstream modifiedContent;
-
         string line;
+
         while (getline(inputFile, line)) {
             istringstream iss(line);
             int nodeId, nodeWeight;
@@ -48,13 +46,11 @@ extern "C" {
                     }
                 }
 
-                // Записываем обновленную строку в память
                 modifiedContent << nodeId << ":" << nodeWeight;
                 for (const auto& edge : edges) {
                     modifiedContent << " " << edge.first << ":" << edge.second;
                 }
 
-                // Добавляем перевод строки, если это не последняя строка
                 if (!inputFile.eof()) {
                     modifiedContent << endl;
                 }
@@ -70,7 +66,6 @@ extern "C" {
 
     __declspec(dllexport) void addEdgeCPP(int id1, int id2, int weight) { // добавление ребра в список смежности
         const string filename = "./matrix/matrix.txt";
-
         fstream inFile(filename);
         vector<string> lines;
         string line;
@@ -116,7 +111,6 @@ extern "C" {
 
     __declspec(dllexport) void removeEdgeCPP(int id1, int id2) { // удаление ребра из списка смежности
         const string filename = "./matrix/matrix.txt";
-
         fstream inFile(filename);
         vector<string> lines;
         string line;
