@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, request
 import ctypes
 
 app = Flask(__name__)
@@ -18,6 +18,18 @@ removeEdge.argtypes = [ctypes.c_int, ctypes.c_int]
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/add-node-endpoint', methods=['POST'])
+def add_node():
+    data = request.get_json()
+    result = addVertex(int(data['id']), int(data['value']))
+    return jsonify(result)
+
+@app.route('/remove-node-endpoint', methods=['POST'])
+def remove_node():
+    data = request.get_json()
+    result = removeVertex(int(data['id']))
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)

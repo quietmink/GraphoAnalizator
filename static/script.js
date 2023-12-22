@@ -1,37 +1,30 @@
 // Матрица смежности
-//=======================================================
 matrixAdjacency = document.getElementById('matrix__adjacency')
 
 matrixAdjacency.addEventListener('click', function() {
 	generateMatrix("matrix__adj", "Матрица смежности")
 })
-//=====================================================
 
 // Матрица инцидентности
-//=======================================================
 matrixIncidentality = document.getElementById('matrix__incidentality')
 
 matrixIncidentality.addEventListener('click', function() {
 	generateMatrix("matrix__incid", "Матрица инцидентности")
 })
-//=====================================================
 
 // Весовая матрица
-//=======================================================
 matrixWeight = document.getElementById('weight__matrix')
 
 matrixWeight.addEventListener('click', function() {
 	generateMatrix("matrix__weight", "Весовая матрица")
 })
 
-// Матрицы
-// Размеры матрицы
-    const rows = 3
-    const cols = 3
-
+const rows = 3
+const cols = 3
+    
     // Генерация матрицы
-		function generateMatrix(matrix__name, matrix__isName) {
-    let matrix = "<table>"; // Используйте <table> вместо <div> для создания таблицы
+function generateMatrix(matrix__name, matrix__isName) {
+    let matrix = "<table>";
     matrix += "<tr>";
     for (let i = 1; i <= cols; i++) {
         matrix += `<th>${i}</th>`;
@@ -57,7 +50,6 @@ matrixWeight.addEventListener('click', function() {
 
 
 // Canvas
-//=======================================================================
 document.addEventListener('DOMContentLoaded', function () {
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
@@ -73,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let edges = [];
     let selectedNode = null;
     let isDragging = false;
+
+    var count = 0;
 
     function drawNode(node) {
         ctx.beginPath();
@@ -113,23 +107,41 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.style.display = 'none';
     }
 
-		function closeAndClearModal() {
-    closeModal();
-    valueInput.value = ''; // Очистим поле ввода при закрытии
-}
+    function closeAndClearModal() {
+        closeModal();
+        valueInput.value = ''; // Очистим поле ввода при закрытии
+    }
 
     function handleAddNodeFromModal() {
         const value = valueInput.value.trim();
+        var nodeValue = document.getElementById("nodeValue").value;
+
+        fetch('/add-node-endpoint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id:count, value: nodeValue }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Ответ от сервера:', data);
+        })
+        .catch((error) => {
+            console.error('Ошибка:', error);
+        });
 
         if (value !== '') {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
             const numericValue = parseFloat(value);
             const newNode = {
+                id:count,
                 x,
                 y,
                 value: isNaN(numericValue) ? 0 : numericValue
             };
+            count++;
             nodes.push(newNode);
             clearCanvas();
             drawGraph();
@@ -156,10 +168,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 nodes.splice(indexToRemove, 1);
             }
 
+            fetch('/remove-node-endpoint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id:selectedNode.id}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ответ от сервера:', data);
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+            });
+
             edges = edges.filter(edge => edge[0] !== selectedNode && edge[1] !== selectedNode);
-
             selectedNode = null;
-
             clearCanvas();
             drawGraph();
         }
